@@ -1,0 +1,58 @@
+# ===  Base Begin  =========================
+
+app:
+  version: 1.0.0
+  name: Quake Web
+
+# ===  Base Close  =========================
+
+# ===  Dev Begin  ==========================
+
+server:
+  port: 17765
+  compression:
+    enabled: false
+
+shell:
+  auth:
+    simple:
+      user:
+        name: donopo
+        password: 123
+  ssh:
+    port: 13600
+
+security:
+  user:
+    password: weak
+
+spring:
+  datasource:
+    platform: mysql
+    data: schema.sql
+    initialize: true
+  main:
+    banner-mode: console
+  application:
+    admin:
+      enabled: true
+  output:
+    ansi:
+      enabled: always
+  devtools:
+    restart:
+      enabled: true
+
+endpoints:
+  health:
+    sensitive: false
+    time-to-live: 1000
+
+data:
+    url: jdbc:mysql://192.168.1.208:3306/pqss_quakee?useUnicode=true&characterEncoding=utf8
+    driver: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+
+# ===  Dev Close  ==========================
+

@@ -1,0 +1,169 @@
+//==================================================
+// Echo Gradle Compile Infomation
+//==================================================
+def printLine = "=================================================="
+println(printLine)
+println("|         Gradle Build Configuration")
+println(printLine)
+
+//==================================================
+// project的额外属性，这里用于定义profile属性，模拟maven的profile
+//==================================================
+def profile = 'dev'
+ext {
+    // profile 默认值 在 gradle.properties 中定义
+    if (project.hasProperty('profile')) {
+        profile = project['profile']
+        println("|           Profile Target is " + profile.toUpperCase())
+        println(printLine)
+    }
+}
+
+//==================================================
+// Global Variable Defination
+//==================================================
+//def springBootVersion = '1.4.0.BUILD-SNAPSHOT'
+
+//==================================================
+// Build Repoistories
+//==================================================
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+        classpath 'org.springframework:springloaded:1.2.3.RELEASE'
+    }
+}
+
+//==================================================
+// Main Plugin Defination
+//==================================================
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply plugin: 'announce'
+
+//==================================================
+// Deploy Jar Name & Version
+//==================================================
+jar {
+    baseName = 'quake'
+    version = '0.1.0-SNAPSHOT'
+}
+
+//==================================================
+// Repositories Defination
+//==================================================
+repositories {
+    mavenCentral()
+}
+
+//==================================================
+// Dependencies Package Libraries
+//==================================================
+dependencies {
+
+    // base
+    compile("org.springframework:spring-context-support")
+    compile("org.springframework:spring-jdbc")
+    compile("org.codehaus.groovy:groovy-all")
+
+    // springboot
+    compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework.boot:spring-boot-starter-remote-shell")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-web") { exclude module: "spring-boot-starter-tomcat" }
+    compile("org.springframework.boot:spring-boot-starter-jetty")
+    compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:1.1.1")
+    compile("org.springframework.boot:spring-boot-starter-freemarker")
+    compile("org.springframework.boot:spring-boot-configuration-processor")
+
+    // database
+    compile('mysql:mysql-connector-java')
+    compile('com.alibaba:druid:1.0.15')
+    compile("org.mybatis:mybatis:3.3.0")
+    compile("org.mybatis:mybatis-spring:1.2.3")
+
+    // redis
+    compile('redis.clients:jedis')
+
+    // msgpack
+    compile 'org.msgpack:msgpack-core:0.7.1'
+
+    // json
+    compile('com.fasterxml.jackson.core:jackson-annotations')
+
+    // google
+    compile('com.google.guava:guava:19.0')
+    compile (group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2')
+    compile (group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.1')
+    compile (group: 'commons-io', name: 'commons-io', version: '2.4')
+
+
+
+
+    // test
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile('com.fasterxml.jackson.core:jackson-core:+')
+    testCompile('com.fasterxml.jackson.core:jackson-annotations:+')
+    testCompile('com.fasterxml.jackson.core:jackson-databind:+')
+    testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    runtime('mysql:mysql-connector-java')
+}
+
+//==================================================
+// Source Defination
+//==================================================
+sourceSets {
+    main {
+        resources {
+            srcDir "conf"
+            srcDir 'web'
+        }
+    }
+}
+
+compileJava.dependsOn(processResources)
+
+//==================================================
+// idea IDE Support
+//==================================================
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/main/")
+    }
+}
+
+//==================================================
+// Execution Defination
+//==================================================
+springBoot {
+    executable = true
+}
+
+//==================================================
+// Merge Configuration by Target
+//==================================================
+
+
+//==================================================
+// Boot Run
+//==================================================
+
+mainClassName = "com.dnp.QuakeApplication"
+
+bootRun {
+    addResources = true
+}
+
+build.mustRunAfter clean
+assemble.mustRunAfter clean
+run.mustRunAfter clean
+
+
