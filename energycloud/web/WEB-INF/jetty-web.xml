@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!--
+  ~ The MIT License (MIT)
+  ~   Copyright (c) 2013 DONOPO Studio
+  ~
+  ~   Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~   of this software and associated documentation files (the "Software"), to deal
+  ~   in the Software without restriction, including without limitation the rights
+  ~   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~   copies of the Software, and to permit persons to whom the Software is
+  ~   furnished to do so, subject to the following conditions:
+  ~
+  ~   The above copyright notice and this permission notice shall be included in
+  ~   all copies or substantial portions of the Software.
+  -->
+
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+    <!-- =========================================================== -->
+    <!-- Server Thread Pool                                          -->
+    <!-- =========================================================== -->
+    <Set name="ThreadPool">
+        <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+            <!-- initial threads set to 10 -->
+            <Set name="minThreads">10</Set>
+
+            <!-- the thread pool will grow only up to 200 -->
+            <Set name="maxThreads">200</Set>
+        </New>
+    </Set>
+
+
+    <!-- =========================================================== -->
+    <!-- Set connectors                                              -->
+    <!-- =========================================================== -->
+
+    <Call name="addConnector">
+        <Arg>
+            <New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                <!-- the ip address or domain to bind -->
+                <Set name="host">
+                    <SystemProperty name="jetty.host"/>
+                </Set>
+
+                <!--&lt;!&ndash; the port to use/bind, defaults to 8080 if property not set &ndash;&gt;-->
+                <!--<Set name="port">-->
+                <!--<SystemProperty name="jetty.port" default="8080"/>-->
+                <!--</Set>-->
+
+                <!-- the time in milliseconds when a connection is considered idle -->
+                <Set name="maxIdleTime">30000</Set>
+
+                <!-- the number of acceptors (their job is to accept the connection and dispatch to thread pool) -->
+                <Set name="Acceptors">5</Set>
+
+                <!-- should the connection statistics be turned on? (Not advisable in production) -->
+                <Set name="statsOn">false</Set>
+
+                <!-- the confidential port -->
+                <Set name="confidentialPort">8443</Set>
+
+                <!-- indicates the minimum number of connections when the server is considered low on resources -->
+                <Set name="lowResourcesConnections">20000</Set>
+
+                <!-- when low on resources, this indicates the maximum time (milliseconds) a connection must be idle to not be closed -->
+                <Set name="lowResourcesMaxIdleTime">5000</Set>
+            </New>
+        </Arg>
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Set handler Collection Structure                            -->
+    <!-- =========================================================== -->
+    <Set name="handler">
+        <!-- the collection of handlers that will handle the request -->
+        <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+            <Set name="handlers">
+                <Array type="org.eclipse.jetty.server.Handler">
+                    <!-- primarily handles the request and maps the request to a ContextHandler -->
+                    <Item>
+                        <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+                    </Item>
+
+                    <!-- The default handler ... handles the request if not yet handled -->
+                    <Item>
+                        <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
+                    </Item>
+
+                    <!-- The handler for your request logs -->
+                    <Item>
+                        <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler"/>
+                    </Item>
+                </Array>
+            </Set>
+        </New>
+    </Set>
+
+    <!-- =========================================================== -->
+    <!-- extra options                                               -->
+    <!-- =========================================================== -->
+
+    <!-- Stops the server when ctrl+c is pressed (registers to Runtime.addShutdownHook) -->
+    <Set name="stopAtShutdown">true</Set>
+
+    <!-- send the server version in the response header? -->
+    <Set name="sendServerVersion">true</Set>
+
+    <!-- send the date header in the response header? -->
+    <Set name="sendDateHeader">true</Set>
+
+    <!-- allows requests(prior to shutdown) to finish gracefully -->
+    <Set name="gracefulShutdown">1000</Set>
+</Configure>
