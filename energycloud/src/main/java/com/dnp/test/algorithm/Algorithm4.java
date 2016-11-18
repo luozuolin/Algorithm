@@ -4,8 +4,10 @@ import com.dnp.QuakeApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Created by luozl on 2016/11/16.
@@ -14,7 +16,6 @@ public class Algorithm4 {
     private static final Logger logger = LoggerFactory.getLogger(QuakeApplication.class);
     public void findAppearMost(int[] d)
     {
-
         Hashtable<Integer, Integer> ht = new Hashtable<Integer, Integer>();
         int maxi=0;
         System.out.println(" -------------查找出现次数最多的数开始--------");
@@ -61,7 +62,6 @@ public class Algorithm4 {
                 }
             }
         }
-
         System.out.println("");
         logger.debug("最大值："+max+"开始位置:"+start+" 长度:"+length+"  区间为：");
         System.out.println("");
@@ -69,8 +69,42 @@ public class Algorithm4 {
         {
             System.out.print(d[start+k]+" ");
         }
-
         System.out.println("");
         System.out.println(" -------------查找连续区间最大总和结束--------");
     }
+    //参考page323
+    public  void calcCanadatrip(ArrayList<Canadatrip> canadatrips, int K)
+    {
+        int distinct=0;
+        int k=0;
+        //第一个路牌出现的位置
+        int min=canadatrips.get(0).L-canadatrips.get(0).M;
+        int max=canadatrips.get(0).L;
+        for (Canadatrip c:canadatrips) {
+            min=min>(c.L-c.M)?(c.L-c.M):min;
+            max=max<c.L?c.L:max;
+        }
+        for(int i=min;i<=max;i++) {
+            k=0;
+            distinct = i;
+            for (Canadatrip c : canadatrips) {
+                if (distinct <= c.L && (distinct + c.M - c.L)>=0)
+                    k += (distinct + c.M - c.L) / c.G + 1;
+                else if(distinct > c.L)
+                    k+=c.M/c.G+1;
+            }
+            if(k==K)
+            {
+                logger.debug("位置："+distinct);
+                return;
+            }
+        }
+    }
+    //课程，去除课程数
+    public  void calcWithDrawal(ArrayList<WithDrawal> withdrawals, int cutnum)
+    {
+
+    }
+
 }
+
